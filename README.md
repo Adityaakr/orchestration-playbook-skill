@@ -79,6 +79,29 @@ tools don't have.
 
 ---
 
+## Does the fleet actually beat one careful pass? We measured it.
+
+Prism's own proof harness was run on a 12-task design battery. The honest result:
+
+```mermaid
+pie showData title Fleet vs Single — 12 tasks
+    "Single wins" : 5
+    "Fleet wins" : 3
+    "Ties" : 4
+```
+
+**A single careful Opus pass beat the 8-lens fleet 5–3 (4 ties) at ~4.6× lower token cost**
+(Wilson 95% CI [0.19, 0.68]). On open-ended design the fleet does *not* earn its cost — its one
+real edge is **defect-finding** (all 3 fleet wins were a lens catching a concrete cited bug,
+including real bugs in Prism's own files). So: **shrink the default; reserve the fleet for
+review/defect-finding** — though the result is confounded (hand-synthesis quality, defect-free
+domain, single judge), making it *shrink-leaning, not proven*.
+
+This is the harness doing its job — a proof tool willing to recommend its own reduction. Full
+methodology, per-task numbers, and caveats: **[`EVAL-REPORT.md`](EVAL-REPORT.md)**.
+
+---
+
 ## Why this exists
 
 A single LLM pass has predictable failure modes:

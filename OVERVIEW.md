@@ -174,10 +174,14 @@ understand → decide → build → ship → attack → learn, with a meter on w
   model lineage — version-pinning sub-agents isn't available here, and that limit is recorded in
   telemetry, never hidden. A genuinely independent reasoner would close the adversarial hole further;
   that's outside the Claude-only constraint.
-- **Designed > proven, but closing.** The eval harness exists and has produced its first real result
-  (the Sonnet skeptic detected a planted auth-bypass at full parity with Opus — so the split is
-  *proven not-harmful*, though not yet proven *better* than 3× Opus on harder flaws). Most headline
-  metrics still report `NOT RUN` until `/prism-eval` is run on an expanded battery.
+- **Measured, and the result is humbling.** `/prism-eval` was run for real on a 12-task design
+  battery. **A single careful Opus pass beat the 8-lens fleet 5–3 (4 ties) at ~4.6× lower token
+  cost** (Wilson 95% CI [0.19, 0.68]). On open-ended design the fleet does *not* earn its cost — its
+  one real edge is **defect-finding** (all 3 fleet wins were a lens catching a concrete cited bug,
+  including real bugs in Prism's own files). Verdict: **shrink the default; reserve the fleet for
+  review/defect-finding** — though the result is confounded (hand-synthesis quality, defect-free
+  domain, single judge) so it's *shrink-leaning, not proven*. Full write-up: [`EVAL-REPORT.md`](EVAL-REPORT.md).
+  This is the harness doing its job: a proof tool that can tell you to shrink itself.
 - **Cost & latency.** Deep runs spawn dozens of agents; use `quick` for light tasks. The find-the-floor
   sweep exists precisely to stop the harness from being bigger than it needs to be.
 
