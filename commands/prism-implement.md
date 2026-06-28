@@ -48,6 +48,18 @@ Every "this works" you say must be backed by a check you actually ran. No except
 - Make the SMALLEST change that satisfies the slice. No scope creep, no drive-by refactors.
 - Touch only what the slice needs. In danger zones, take smaller steps and re-read before editing.
 - Don't delete or overwrite a file you haven't read.
+- **VERIFY, DON'T GUESS (anti-hallucination — non-negotiable).** Before you use any symbol,
+  import, or API, confirm it actually exists:
+  - **Project symbols** (functions, components, hooks, types, routes, env vars): grep/read to
+    confirm the symbol exists and its REAL signature/shape. Never assume a helper or prop exists.
+  - **Library APIs:** confirm the package is in `package.json`, check the INSTALLED version, and
+    verify the method name / signature / options against the package's own type defs in
+    `node_modules` (or the official docs for THAT version via WebFetch). Never invent method names,
+    config keys, import paths, or CLI flags — fabricated APIs are the #1 coding hallucination.
+  - **Don't add a dependency that isn't installed** to make code "work" — either it's already a
+    dep, or adding it is an explicit, stated decision.
+  - If you cannot verify something, mark it UNVERIFIED and check it before writing code on the
+    assumption. The typecheck/test loop is the backstop, NOT a license to guess.
 
 ## 3. Run → diagnose → fix loop (HARD CAP 5 iterations)
 Each iteration:

@@ -60,12 +60,19 @@ violate a recorded invariant without flagging. After a PLAN/BUILD run, update it
 invariants (cited), a Decision-log entry, assumptions to be checked later. UNDERSTAND runs
 maintain it as their main artifact. This is what makes prism compound on THIS project.
 
-VERIFY — two checks. (a) GROUNDING: every claim about the code cites `file:line`; one
-verifier agent re-opens those lines and strikes any claim the citation doesn't support
-(kills hallucinated "your code does X"). (b) ADVERSARIAL: pull the LOAD-BEARING claims; for
-the top 4, spawn 3 skeptics each whose ONLY job is to REFUTE — default "refuted" when
-uncertain, concrete counterexample required. ≥2 of 3 refute → claim is FALSE: strike it and
-fix what depended on it. Report survivors/casualties.
+VERIFY — two checks. (a) GROUNDING: every factual claim is checked against a SOURCE, never
+recall. Claims about the code cite `file:line` and a verifier re-opens them; claims about a
+library/API/SDK are verified against the INSTALLED version's type defs or the official docs
+(WebFetch), not from memory. Strike anything unsupported (kills both hallucinated "your code
+does X" AND invented library APIs/methods/config). (b) ADVERSARIAL: pull the LOAD-BEARING
+claims; for the top 4, spawn 3 skeptics each whose ONLY job is to REFUTE — default "refuted"
+when uncertain, concrete counterexample required. ≥2 of 3 refute → claim is FALSE: strike it
+and fix what depended on it. Report survivors/casualties.
+
+ANTI-HALLUCINATION (all commands) — prefer reading over recalling. If a fact is checkable
+(a symbol, an API signature, a file path, a config key, a version, a price), CHECK it before
+asserting. State confidence honestly and label anything UNVERIFIED rather than presenting a
+guess as fact. "I don't know, let me look" beats a confident fabrication.
 
 PERSIST — looped/spec runs only: if a `docs/` (or `docs/plans/`) folder exists, save the
 final output as a NEW numbered markdown file matching the existing naming convention

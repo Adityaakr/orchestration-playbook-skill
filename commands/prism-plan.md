@@ -41,10 +41,12 @@ falsifiers — what it rests on + what would CHANGE the answer. 5. Open question
 (risk tolerance, business pref, budget). 6. Grounded — code claims cite `file:line`, facts cite a source.
 
 ## 4. VERIFY (parallel) — two checks
-**4a. Grounding check.** Every claim the draft makes about the codebase MUST cite `file:line`.
-Spawn one verifier agent that RE-OPENS each cited line and confirms it actually says what the
-claim asserts. Strike or correct any claim whose citation doesn't check out. This makes
-hallucinated "your code does X" claims structurally impossible. Report verified vs struck.
+**4a. Grounding check.** Every factual claim must trace to a SOURCE, not recall. Spawn one
+verifier agent that: (i) re-opens each `file:line` cited for codebase claims and confirms it
+says what's asserted; (ii) checks every library/SDK/API claim (method names, signatures,
+config, version behavior) against the installed type defs or official docs (WebFetch) — NOT
+from memory. Strike or correct anything unsupported. This makes both hallucinated "your code
+does X" and invented SDK methods/APIs structurally impossible. Report verified vs struck.
 **4b. Adversarial check.** Pull the draft's load-bearing claims. For the top 4, spawn 3 skeptic
 subagents each whose ONLY job is to REFUTE (default "refuted" if uncertain; concrete
 counterexample required). ≥2 of 3 refute → claim is FALSE: strike it, fix what depended on it.
