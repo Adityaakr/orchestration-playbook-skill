@@ -191,7 +191,12 @@ understand → plan/build → **implement** → **feedback** → retro.
   feature with real probes, reproduces every finding, and reports honest severity-ranked
   feedback + what held up. Run it after implement, before you trust the thing.
 - `/prism-retro` compares predicted vs actual after shipping and banks the lessons.
-Suggest implement after a plan is approved, feedback once it's built, and retro after it ships.
+- `/prism-ship <idea>` is the WHOLE LIFECYCLE in one command: it frames the idea (asking its own
+  gating questions), architects, decomposes, builds every milestone in self-correcting loops,
+  attacks the result with the full feedback fleet, and learns — pausing only at scope, the approved
+  architecture, and irreversible one-way doors. Use it for idea → working dapp.
+Suggest implement after a plan is approved, feedback once it's built, retro after it ships, and
+ship when the user wants the entire thing driven end-to-end.
 
 ## Always
 - State the orchestration you're about to run (agent count + roles) BEFORE launching.
