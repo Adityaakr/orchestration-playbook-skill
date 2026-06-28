@@ -31,12 +31,16 @@ Run a full deliberation on "what architecture + stack for this?":
   domain by relevance = security/threat · regulatory/compliance · cost/economics · data-integrity ·
   scale/ops · simplicity/YAGNI. MANDATORY: money/custody/auth → include security AND regulatory.
   Each returns a TIGHT brief (answer, 2–3 reasons, confidence, where unsure).
+  Route domain lenses to concern-owned code where an existing repo is present (W1 differential context).
+- DIVERGENCE (W2): after fan-out print `DIVERGENCE: 0.NN (evidence 0.NN, conclusion 0.NN) |
+  threshold 0.30 UNCALIBRATED`; flag if lenses converged (diversity may be cosmetic).
 - JUDGE (consensus / contradictions + better-supported side / unique insights / blind spots).
 - Draft the architecture in EXPERT FORMAT: 1. Recommendation 2. Why 3. Steelman of the
   rejected stack 4. Assumptions & falsifiers 5. Open questions for the human 6. Grounded (cite sources for external claims).
-- VERIFY: (a) grounding — any claim about existing code cites `file:line` and a verifier
-  re-opens it to confirm; (b) adversarial — top 4 load-bearing claims × 3 skeptics in
-  parallel (≥2 refute → strike & fix).
+- VERIFY: (a) grounding — any claim about existing code cites `file:line`/library docs and a verifier
+  re-opens it to confirm; (b) adversarial (W5) — top 4 claims × **2× Opus + 1× Sonnet** skeptics
+  (cross-tier; version axis unavailable). Label survivors `grounded` vs `cross-tier-survived`;
+  grounding OUTRANKS cross-tier survival; never call it "cross-model".
 
 ## Phase 3 — DECOMPOSE into a phased roadmap
 Break the architecture into MILESTONES, each a thin vertical slice that actually ships.
@@ -59,3 +63,5 @@ milestone that isn't really a vertical slice. Rewrite the sequence.
 - MEMORY: create/seed `.prism/project-model.md` with the chosen architecture, the
   invariants the build will rely on (cited once code exists), danger zones, and a Decision
   log entry. This becomes the foundation every later prism run reads from.
+- TELEMETRY (W6): append the measured block (divergence + components, draft/skeptic models,
+  per-claim grounded/cross-tier-survived labels) to the doc and memory for `/prism-retro`.

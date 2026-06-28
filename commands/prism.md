@@ -36,10 +36,26 @@ State: `Archetype: X | Mode: Y | Stakes: two-way/one-way | Fleet: N agents` then
 
 FAN-OUT — launch the chosen agents as parallel Task subagents in ONE message. Each gets
 the full task + its assigned lens/scope, and returns a TIGHT brief: its answer, 2–3
-load-bearing reasons, a confidence (low/med/high), where it's unsure. No padding. Give
-repo-touching agents Read/Grep/Glob; give one agent WebSearch/WebFetch if current facts
+load-bearing reasons, a confidence (low/med/high), where it's unsure, and the explicit list
+of `file:line` anchors it actually examined (needed for the divergence metric). No padding.
+Give repo-touching agents Read/Grep/Glob; give one agent WebSearch/WebFetch if current facts
 matter. DIVERSITY RULE: never assign two agents a lens that would return the same brief —
 more agents help only when they see DIFFERENT things.
+
+DIFFERENTIAL CONTEXT (W1 — make diversity real, not cosmetic). Same context + different
+instruction = one model in costumes. Before fan-out, route each DOMAIN lens to the slice of
+the codebase its concern OWNS, so lenses see different code, not just read different prompts:
+- security → auth / session / key / custody / permission / crypto paths
+- regulatory → compliance / jurisdiction / money-movement paths
+- data-integrity → schema / migrations / ledger / balance / transaction-boundary code
+- cost → fees / gas / infra / resource-allocation code
+- UX → user-facing flows + error/edge surfaces
+- scale · supply-chain · testability → the analogous concern-owned slice
+CORE lenses (first-principles / adversary / practitioner) stay on the BROAD picture — they
+are holistic; do NOT narrow them. Use the project-model's `file:line` map + danger zones to
+route. If the project-model isn't categorized by concern, run a one-pass bucketing scan that
+tags files by concern and CACHE it in `.prism/project-model.md` under a "File concern map"
+section so later runs skip it. Log which file set each lens received.
 
 LENS ROSTER (pick the relevant ones):
 - core (always): first-principles · adversary · practitioner
@@ -47,6 +63,24 @@ LENS ROSTER (pick the relevant ones):
   cost/economics · UX/flow · simplicity/YAGNI · scale/ops · testability
 - MANDATORY: if the task moves money / holds funds / touches auth or custody → include
   BOTH security AND regulatory.
+
+DIVERGENCE (W2 — the falsifier; runs after EVERY fan-out, before judging). Measure whether
+the lenses actually split or just cosplayed splitting. Compute a Divergence Score ∈ [0,1]
+from two Claude-only signals:
+1. Evidence overlap (WEIGHT HEAVIEST) — Jaccard similarity of the cited `file:line` sets
+   across briefs; `div_evidence = 1 − mean_pairwise_Jaccard`. Lower overlap = lenses looked
+   at different code = more divergent. This directly tests whether W1 actually worked.
+2. Conclusion agreement — pairwise compare each brief's recommendation (agree / partial /
+   disagree); `div_conclusion = fraction of pairs that disagree or partially disagree`.
+`DivergenceScore = 0.6·div_evidence + 0.4·div_conclusion`.
+(Optional 3rd signal, semantic spread, needs embeddings — there is NO native Anthropic
+embeddings endpoint, so real embeddings break Claude-only. Either accept Voyage for this one
+metric, or have ONE Claude instance read all briefs and emit a 0–1 pairwise-distance rating.
+If neither is worth it, ship on the two core signals — they carry the falsifier.)
+Print every run: `DIVERGENCE: 0.NN (evidence 0.NN, conclusion 0.NN) | threshold 0.30 UNCALIBRATED`.
+Below threshold → FLAG: "lenses converged — diversity may be cosmetic; check differential
+context (W1)." Do NOT treat 0.30 as truth — it is calibrated by `/prism-eval` (W4); until
+then it is an UNCALIBRATED placeholder.
 
 JUDGE — read all briefs, produce structured analysis NOT a merge:
 - consensus (treat as higher-confidence)
@@ -64,10 +98,29 @@ VERIFY — two checks. (a) GROUNDING: every factual claim is checked against a S
 recall. Claims about the code cite `file:line` and a verifier re-opens them; claims about a
 library/API/SDK are verified against the INSTALLED version's type defs or the official docs
 (WebFetch), not from memory. Strike anything unsupported (kills both hallucinated "your code
-does X" AND invented library APIs/methods/config). (b) ADVERSARIAL: pull the LOAD-BEARING
-claims; for the top 4, spawn 3 skeptics each whose ONLY job is to REFUTE — default "refuted"
-when uncertain, concrete counterexample required. ≥2 of 3 refute → claim is FALSE: strike it
-and fix what depended on it. Report survivors/casualties.
+does X" AND invented library APIs/methods/config). (b) ADVERSARIAL (W5 — decorrelate the
+skeptics): pull the LOAD-BEARING claims; for the top 4, spawn EXACTLY 3 skeptics in a fixed
+**2:1 split** whose ONLY job is to REFUTE (default "refuted" when uncertain; concrete
+counterexample required):
+- **2× Opus** (rigor — frontier-tier refutation) + **1× Sonnet** (independence — a different
+  TIER shares fewer failure modes, and is cheaper). Pin via the Task `model` parameter
+  (`opus` / `sonnet`). NOT 3× Opus (zero independence) and NOT 2× Sonnet (dilutes rigor).
+- ≥2 of 3 refute → claim is FALSE: strike it, fix what depended on it. With 2:1 the lone
+  Sonnet can't sink a good claim alone, but CAN be the deciding vote flagging a flaw both
+  Opus slots waved through — that asymmetry is the point.
+- MODEL-AXIS HONESTY (verified): this harness's sub-agent `model` parameter selects by TIER
+  (`opus`/`sonnet`/`haiku`) only — it CANNOT pin a specific prior version. So we get the
+  cross-TIER axis, not a cross-version axis. Record what was achieved in telemetry:
+  `skeptic_pool: 2x-opus + 1x-sonnet (cross-tier; version axis unavailable)`. If a future
+  environment exposes version ids, pin 2× prior-Opus + 1× Sonnet to add the version axis.
+- LABEL every SURVIVING claim by HOW it survived: `grounded` (file:line re-opened + confirmed
+  against live code = external truth) vs `cross-tier-survived` (mixed Opus+Sonnet skeptics did
+  not refute = decorrelated reviewers didn't object).
+- **GROUNDING OUTRANKS cross-tier survival** — a `grounded` claim is STRONGER evidence; never
+  conflate them. Never call this "cross-model." Print this caveat verbatim in every decision doc:
+  > Cross-tier verification reduces instance- and tier-level error correlation but not
+  > shared-lineage blind spots. Treat cross-tier survival as weaker evidence than grounding.
+Report survivors/casualties with their labels.
 
 ANTI-HALLUCINATION (all commands) — prefer reading over recalling. If a fact is checkable
 (a symbol, an API signature, a file path, a config key, a version, a price), CHECK it before
@@ -77,6 +130,18 @@ guess as fact. "I don't know, let me look" beats a confident fabrication.
 PERSIST — looped/spec runs only: if a `docs/` (or `docs/plans/`) folder exists, save the
 final output as a NEW numbered markdown file matching the existing naming convention
 (next free number → `NN-<slug>.md`); NEVER overwrite. Print the path. Single-pass: do not write files.
+
+TELEMETRY (W6 — every PLAN/BUILD decision doc AND memory carry a MEASURED block, not prose):
+```
+## Telemetry
+- divergence: 0.NN (evidence 0.NN, conclusion 0.NN) | threshold 0.30 UNCALIBRATED
+- grounding: P=.. R=.. (only if eval fixtures applied this run, else n/a)
+- models: draft=opus · skeptics=2x-opus+1x-sonnet (cross-tier; version axis unavailable)
+- claims: <claim-id> grounded · <claim-id> cross-tier-survived · ...
+- fleet: N lenses · token-multiple vs single-pass ≈ (if known, else n/a)
+```
+`/prism-retro` consumes this to produce MEASURED lessons and feed the divergence-threshold
+calibration. `/prism-eval` turns the placeholders into real numbers.
 
 EXPERT FORMAT — every PLAN/BUILD draft uses this. It's how you (the user) learn the reasoning, not just the answer:
 1. Recommendation — lead with it, one paragraph.

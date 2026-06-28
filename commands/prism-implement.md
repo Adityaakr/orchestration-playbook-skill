@@ -77,9 +77,13 @@ Each iteration:
   On a non-success stop, DO NOT thrash — escalate (see §5 handoff).
 
 ## 4. Verify independently (don't trust your own green)
-- **Adversarial check:** spawn a skeptic agent — "does this ACTUALLY satisfy the acceptance
-  criteria, or did the test pass trivially / for the wrong reason?" It re-opens the diff + the
-  criteria. Fix any gap it finds.
+- **Adversarial check (W5 — decorrelated skeptics):** for each load-bearing claim about the
+  change, spawn 3 skeptics in a fixed **2× Opus + 1× Sonnet** split (pin via the Task `model`
+  param) — "does this ACTUALLY satisfy the acceptance criteria, or did the test pass trivially /
+  for the wrong reason?" They re-open the diff + criteria. ≥2 of 3 refute → fix the gap. The
+  Sonnet (different TIER → fewer shared blind spots) can be the deciding vote on something both
+  Opus slots missed. This is cross-TIER, not cross-version; grounding (an actual passing run)
+  still OUTRANKS skeptic survival.
 - **Integrity gate:** if `hooks/prism-gate.sh` exists in the repo, run it on the diff — it
   catches faked-green (skipped/deleted tests), hardcoded secrets, and leftover debug. Fix any
   finding; NEVER suppress it.

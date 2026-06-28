@@ -35,7 +35,10 @@ and turns its angle into a concrete edge-case the user should test in their OWN 
 Each returns: what it tried/observed, what broke (or the concrete risk), the EXACT repro or evidence, a severity guess.
 
 ## 2. Verify & LABEL confidence (kill false positives)
-Re-run/reproduce each candidate via an independent skeptic. Then tag every finding:
+Re-run/reproduce each candidate via independent skeptics — use a **2× Opus + 1× Sonnet** split
+(W5, pin via the Task `model` param) so a different TIER, with fewer shared blind spots, can catch
+what the Opus slots miss. (Cross-TIER, not cross-version — the sub-agent `model` param selects by
+tier only.) Then tag every finding:
 - **CONFIRMED** — reproduced with a concrete trigger (active mode).
 - **OBSERVATION** — from public/visible material, not exploited (passive mode).
 - **HYPOTHESIS** — plausible but unverified.

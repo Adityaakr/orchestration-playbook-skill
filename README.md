@@ -92,7 +92,7 @@ This playbook attacks each of those directly:
 
 ---
 
-## The eight commands
+## The nine commands
 
 | Command | Use it to… | What runs under the hood |
 |---|---|---|
@@ -103,7 +103,22 @@ This playbook attacks each of those directly:
 | **`/prism-feedback`** | Stress-test & try to break a feature | Adversarial QA — maps the attack surface, runs real probes (boundary/malicious/concurrency/failure/auth), reproduces every finding, reports severity-ranked feedback + what held up |
 | **`/prism-retro`** | Learn from a shipped plan | Compares what the plan PREDICTED vs what actually shipped → writes the lessons back into project memory |
 | **`/prism-prune`** | Keep memory trustworthy | Re-verifies every cited invariant against the live code; prunes/corrects stale entries so memory doesn't rot as it grows |
+| **`/prism-eval`** | Prove the fleet beats one pass | Measures divergence, grounding precision/recall, fleet-vs-single win-rate, injected-flaw detection, and the minimal config that still wins — willing to recommend shrinking the default |
 | **`/prism`** | Not sure which — let it decide | Auto-classifies the task into understand / plan / build and runs the right one |
+
+### Is the deliberation real, or theatre? (measured, not asserted)
+Prism's bet — that fanning one model into lenses + judging + adversarial verify beats a single
+careful pass — is now **measurable**, not just claimed:
+- **Differential context** routes each domain lens to the code its concern owns, so lenses see
+  *different* code, not just read different prompts.
+- A **divergence score** (Jaccard overlap of the `file:line` sets each lens examined + conclusion
+  disagreement) prints on every run and **flags when diversity is cosmetic**.
+- The adversarial skeptics run a **2× Opus + 1× Sonnet (cross-tier)** split to decorrelate blind
+  spots — labelled honestly as *cross-tier, not cross-model*, with **grounding outranking cross-tier
+  survival**. (Sub-agent model selection is by tier only here; the cross-*version* axis isn't
+  available and that limit is recorded in telemetry, never hidden.)
+- `/prism-eval` + `eval/fixtures/` turn all of this into real numbers — and the harness is
+  explicitly allowed to conclude **"shrink the default — the smaller config wins."**
 
 All commands share the same primitives (below). The named commands are leaner, focused
 entry points; `/prism` is the catch-all router.

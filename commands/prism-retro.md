@@ -27,11 +27,17 @@ usually a retro that didn't look hard enough.
    problem the plan didn't foresee), or WRONG (the plan asserted something reality disproved).
    For every MISSED/WRONG, find the ROOT CAUSE — which lens should have caught it? what
    assumption was unsafe? was an invariant violated?
-4. **Bank the lessons.** Append to the **Lessons** section of `.prism/project-model.md`
+4. **Consume the telemetry (W6 — make lessons MEASURED, not anecdotal).** Read the plan's
+   `## Telemetry` block. Cross-reference it with what actually happened:
+   - Did the bug that shipped come from a `cross-tier-survived` claim (skeptics passed it) rather
+     than a `grounded` one? That's evidence cross-tier survival is weak — reinforce grounding.
+   - Was the run's divergence score LOW *and* the outcome poor? That's a data point that the fleet
+     was cosmetic on this task — feed it to the `/prism-eval` threshold calibration.
+   - Was a high-divergence run worth its token-multiple? Note it for the find-the-floor sweep.
+5. **Bank the lessons.** Append to the **Lessons** section of `.prism/project-model.md`
    (create if missing), dated. Each lesson: what we predicted, what happened, the root cause,
-   and the CONCRETE adjustment for next time (e.g. "always run the regulatory lens on payout
-   flows", "invariant: settlement is idempotent — `Settle.sol:88`"). Also correct any now-false
-   invariant or danger-zone note in memory.
+   the CONCRETE adjustment for next time, AND the measured signal behind it (divergence, claim
+   survival mode, token-multiple) — not just narrative. Correct any now-false invariant/danger-zone.
 
 ## Output
 - A short scorecard: N predictions → X confirmed / Y missed / Z wrong.
