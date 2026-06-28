@@ -20,13 +20,17 @@ MODE:
 - Overrides: "deep"/"loop" force looped; "quick"/"fast" force single-pass.
 - Cost guard: a single verifiable fact → just answer, no fan-out, and say prism wasn't needed.
 
-FLEET SIZING (default counts; scale to stakes):
-- Fan-out agents: 6 (3 core + 3 domain). High-stakes (money/custody/auth/data-loss) → 8.
-- Adversarial verify: top 4 load-bearing claims × 3 skeptics each.
-- Loop: hard cap 3 rounds; re-verify only NEW claims each round.
-- "quick": 3 core lenses, no verify panel — the cheap path.
+FLEET SIZING — scale spend to STAKES, not habit. First classify the decision:
+- Two-way door (cheap to reverse: a refactor, a UI tweak, an internal helper) → 3 lenses,
+  skip the verify panel. Don't burn a fleet on something you can undo in a commit.
+- One-way door / high-stakes (moves money, custody, auth, data-loss, public API, schema
+  migration, anything expensive to unwind) → 8 lenses + full adversarial verify.
+- Everything in between → 6 lenses + verify top claims.
+Then: Adversarial verify = top 4 load-bearing claims × 3 skeptics. Loop = hard cap 3 rounds,
+re-verify only NEW claims. "quick" = 3 core lenses, no verify. Don't exceed 8 fan-out agents
+without saying why. Stop early the moment a round adds nothing new — convergence, not the cap.
 
-State: `Archetype: X | Mode: Y (rule fired) | Fleet: N agents` then proceed.
+State: `Archetype: X | Mode: Y | Stakes: two-way/one-way | Fleet: N agents` then proceed.
 
 ## Building blocks (the playbooks below reuse these)
 

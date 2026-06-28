@@ -92,7 +92,7 @@ This playbook attacks each of those directly:
 
 ---
 
-## The six commands
+## The seven commands
 
 | Command | Use it to… | What runs under the hood |
 |---|---|---|
@@ -101,6 +101,7 @@ This playbook attacks each of those directly:
 | **`/prism-build`** | Stand up a new project from scratch | Frame the goal → architect the stack (verified) → decompose into a phased, dependency-checked roadmap that ships v1 first |
 | **`/prism-implement`** | Turn a planned milestone into working code | Write → run tests → diagnose → fix, looping until it actually passes. Regression-safe, never fakes green, escalates instead of thrashing |
 | **`/prism-retro`** | Learn from a shipped plan | Compares what the plan PREDICTED vs what actually shipped → writes the lessons back into project memory |
+| **`/prism-prune`** | Keep memory trustworthy | Re-verifies every cited invariant against the live code; prunes/corrects stale entries so memory doesn't rot as it grows |
 | **`/prism`** | Not sure which — let it decide | Auto-classifies the task into understand / plan / build and runs the right one |
 
 All commands share the same primitives (below). The named commands are leaner, focused
@@ -145,6 +146,32 @@ with hard guards against the classic agent failure modes:
   acceptance criteria (not just that a trivial test passed).
 - **Respects one-way doors** — branches before touching main; stops and asks before deploy,
   DB migration, secrets, or anything irreversible.
+
+---
+
+## Enforcement: from prompts to hard rules
+
+Most "agent guards" are just text the model is *asked* to follow — so a long context or an
+off day and they get skipped. Prism ships the critical ones as **real Claude Code hooks** that
+the model cannot bypass:
+
+- **`hooks/prism-guard.sh`** (a `PreToolUse` Bash hook) runs *before every shell command* and
+  **blocks one-way doors** — force-push, `npm publish`, `vercel --prod`, `prisma migrate
+  deploy`, `cast send`, `rm -rf`, `drop table`, etc. The model literally can't run them until
+  the user explicitly approves (by appending a `# PRISM_OK` token). This turns "I promise to
+  stop at irreversible actions" into the system stopping them.
+- **`hooks/prism-gate.sh`** is the integrity check `/prism-implement` runs on its diff before
+  declaring done — it catches the classic cheat of faking a green by skipping/deleting tests,
+  plus hardcoded secrets and leftover debug.
+
+Wire them up (copy `settings.example.json`'s `hooks` block into your `settings.json`):
+
+```bash
+mkdir -p ~/.claude/hooks
+cp hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh
+# then merge settings.example.json's "hooks" block into ~/.claude/settings.json
+# (global) or <repo>/.claude/settings.json (one project)
+```
 
 ---
 

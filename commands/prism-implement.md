@@ -56,6 +56,9 @@ Each iteration:
 - **Adversarial check:** spawn a skeptic agent — "does this ACTUALLY satisfy the acceptance
   criteria, or did the test pass trivially / for the wrong reason?" It re-opens the diff + the
   criteria. Fix any gap it finds.
+- **Integrity gate:** if `hooks/prism-gate.sh` exists in the repo, run it on the diff — it
+  catches faked-green (skipped/deleted tests), hardcoded secrets, and leftover debug. Fix any
+  finding; NEVER suppress it.
 - **Self-review the diff:** leftover debug/console logs, hardcoded secrets, unhandled errors,
   obvious bugs. For money/auth/data code, apply the security lens.
 - **Confirm clean:** full suite still green, no new type/lint errors.

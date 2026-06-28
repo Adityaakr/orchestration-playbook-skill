@@ -1,0 +1,13 @@
+{
+  "//": "Wire prism's enforcement hooks. Copy hooks/*.sh to ~/.claude/hooks/ (or a project .claude/hooks/), then merge this 'hooks' block into your settings.json (~/.claude/settings.json for global, or <repo>/.claude/settings.json for one project). The guard runs before every Bash call and blocks irreversible one-way-door commands unless explicitly approved with a '# PRISM_OK' token.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "bash ~/.claude/hooks/prism-guard.sh" }
+        ]
+      }
+    ]
+  }
+}
