@@ -125,7 +125,7 @@ This playbook attacks each of those directly:
 
 ---
 
-## The ten commands
+## The eleven commands
 
 | Command | Use it to… | What runs under the hood |
 |---|---|---|
@@ -137,6 +137,7 @@ This playbook attacks each of those directly:
 | **`/prism-retro`** | Learn from a shipped plan | Compares what the plan PREDICTED vs what actually shipped → writes the lessons back into project memory |
 | **`/prism-prune`** | Keep memory trustworthy | Re-verifies every cited invariant against the live code; prunes/corrects stale entries so memory doesn't rot as it grows |
 | **`/prism-eval`** | Prove the fleet beats one pass | Measures divergence, grounding precision/recall, fleet-vs-single win-rate, injected-flaw detection, and the minimal config that still wins — willing to recommend shrinking the default |
+| **`/prism-write`** | Write human docs for what you built | README · change summary · retroactive code comments · or a clean self-contained HTML article with an architecture diagram. Grounded in the real files, human voice, no slop, no em-dashes. JetBrains style by default; asks for the article only |
 | **`/prism-ship`** | Idea → working dapp, one command | Drives the whole lifecycle autonomously — frame (asks its own gating Qs) → architect → decompose → implement each milestone in self-correcting loops → attack with the full feedback fleet → learn. Pauses only at scope, the approved architecture, and irreversible one-way doors |
 | **`/prism`** | Not sure which — let it decide | Auto-classifies the task into understand / plan / build and runs the right one |
 

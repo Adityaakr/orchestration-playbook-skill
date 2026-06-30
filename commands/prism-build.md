@@ -20,8 +20,14 @@ feed its Architecture / Invariants / Danger zones / Lessons into the build.
   Tailwind; CSS modules; styled-components), structure/naming, package manager (lockfile), and
   tooling (eslint/prettier, test runner). The new work MUST match all of these — Phase 2 then only
   decides choices the project hasn't already made. Never introduce a second framework/styling system
-  or drop raw HTML/CSS/JS into a typed component project.
+  or drop raw HTML/CSS/JS into a typed component project. Matching means the QUALITY bar too (the repo's
+  naming, function-size, comment, and error-handling patterns), not just the tooling.
 - **True greenfield → free choice.** No existing conventions; Phase 2 picks the stack from scratch.
+  Because there is no exemplar to conform to, SET the code-craft standard now and make it the project's
+  convention: intent-revealing names, one job per function, no dead code, comments explain why, doc
+  comments on the public surface. Pick the objective enforcers in Phase 2 (a formatter + a linter +
+  strict type config) so the floor is machine-checked, not just prose. Record all of this as a
+  **Convention** in `.prism/project-model.md` so every later `/prism-implement` slice inherits it.
 
 ## Phase 1 — FRAME (do this first)
 Extract the goal, hard constraints, and non-negotiables. If the request is under-specified,

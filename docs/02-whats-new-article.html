@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three things we added to Prism</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --panel: #f3efe9;
+    --code-bg: #efebe5;
+    --text: #2a2724;
+    --muted: #6b645c;
+    --line: #e0d9cf;
+    --accent: #b5503a;
+    --accent-soft: #f0ddd6;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+  header.masthead {
+    border-bottom: 1px solid var(--line);
+    padding: 64px 0 36px;
+    margin-bottom: 8px;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: 38px;
+    line-height: 1.15;
+    margin: 0 0 18px;
+    letter-spacing: -0.015em;
+    font-weight: 680;
+  }
+  .lede { font-size: 19px; color: var(--text); margin: 0; }
+  .lede .dim { color: var(--muted); }
+  .meta {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+  section { padding: 30px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 6px;
+  }
+  h3 {
+    font-size: 25px;
+    margin: 6px 0 14px;
+    letter-spacing: -0.01em;
+    font-weight: 640;
+  }
+  h3 .num { color: var(--accent); font-family: var(--mono); font-size: 18px; margin-right: 10px; }
+  p { margin: 0 0 16px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--code-bg);
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    color: #4a3f38;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid #e6c9bf;
+    padding: 1px 7px;
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+  figure { margin: 8px 0 6px; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: center;
+  }
+  .correction { margin: 18px 0; }
+  .correction .lead { font-weight: 640; }
+  ul.tight { margin: 0 0 16px; padding-left: 20px; }
+  ul.tight li { margin-bottom: 7px; }
+  .files {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 6px 0 4px;
+    overflow-x: auto;
+  }
+  .files .ln { display: block; white-space: pre; color: #4a3f38; }
+  .files .add { color: var(--accent); }
+  footer {
+    padding: 40px 0 80px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  footer p { margin: 0 0 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="kicker">Prism / changelog</p>
+    <h1>Three things we added to Prism</h1>
+    <p class="lede">Prism now reads big codebases without going blind, holds a clean-code floor when it
+    writes from scratch, and ships a new command that turns code into human docs.
+    <span class="dim">Each one was hardened by an adversarial pass before it landed.</span></p>
+    <div class="meta">
+      <span>2026-06-30</span>
+      <span>branch: feat/prism-write</span>
+      <span>scope: 8 files, 1 new command</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Context</h2>
+    <h3>Why these three, and why we did not just trust ourselves</h3>
+    <p>Prism is a set of command playbooks that split one hard question into a spectrum of agents, judge
+    them, verify the load-bearing claims, and write the result back into project memory. Its own
+    evaluation found something humbling: on open-ended design, a single careful pass beats the full
+    eight-lens fleet, and the fleet only earns its cost when there is a concrete defect to catch.</p>
+    <p>So we built these three changes the way the evaluation says to. We ran a lean panel for the design,
+    then pointed three cross-tier skeptics at the plan whose only job was to break it. They did. Two of
+    the three designs changed because of what they found. The corrections are called out in each section
+    below, because the corrections are the interesting part.</p>
+  </section>
+
+  <section>
+    <h2>Architecture</h2>
+    <h3>Where the three additions plug in</h3>
+    <figure>
+      <svg viewBox="0 0 760 300" role="img" aria-labelledby="diagram-title diagram-desc">
+        <title id="diagram-title">Prism pipeline with the three new additions</title>
+        <desc id="diagram-desc">A left-to-right pipeline. A new Repo Map feeds fan-out. The pipeline runs
+        fan-out, divergence, judge, verify, loop, persist. A new Craft floor attaches to the build and
+        implement stages. The new prism-write command attaches to the persist stage.</desc>
+        <defs>
+          <style>
+            .box { fill:#f3efe9; stroke:#d8cfc3; stroke-width:1; }
+            .stage { fill:#2a2724; font:600 13px ui-monospace,monospace; }
+            .sub { fill:#6b645c; font:11px ui-monospace,monospace; }
+            .newbox { fill:#f0ddd6; stroke:#b5503a; stroke-width:1.5; }
+            .newlabel { fill:#b5503a; font:700 12px ui-monospace,monospace; }
+            .flow { stroke:#b09a8c; stroke-width:1.5; fill:none; marker-end:url(#ah); }
+            .flow-new { stroke:#b5503a; stroke-width:1.5; fill:none; stroke-dasharray:4 3; marker-end:url(#ahr); }
+          </style>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#b09a8c"/>
+          </marker>
+          <marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#b5503a"/>
+          </marker>
+        </defs>
+
+        <!-- Repo Map (new) -->
+        <rect class="newbox" x="8" y="120" width="118" height="56" rx="7"/>
+        <text class="newlabel" x="67" y="143" text-anchor="middle">Repo Map</text>
+        <text class="sub" x="67" y="160" text-anchor="middle" fill="#b5503a">NEW · sizing gate</text>
+
+        <!-- pipeline stages -->
+        <g>
+          <rect class="box" x="158" y="120" width="92" height="56" rx="7"/>
+          <text class="stage" x="204" y="144" text-anchor="middle">fan-out</text>
+          <text class="sub" x="204" y="160" text-anchor="middle">differential</text>
+
+          <rect class="box" x="262" y="120" width="80" height="56" rx="7"/>
+          <text class="stage" x="302" y="144" text-anchor="middle">diverge</text>
+          <text class="sub" x="302" y="160" text-anchor="middle">falsifier</text>
+
+          <rect class="box" x="354" y="120" width="72" height="56" rx="7"/>
+          <text class="stage" x="390" y="148" text-anchor="middle">judge</text>
+
+          <rect class="box" x="438" y="120" width="86" height="56" rx="7"/>
+          <text class="stage" x="481" y="144" text-anchor="middle">verify</text>
+          <text class="sub" x="481" y="160" text-anchor="middle">cross-tier</text>
+
+          <rect class="box" x="536" y="120" width="72" height="56" rx="7"/>
+          <text class="stage" x="572" y="148" text-anchor="middle">loop</text>
+
+          <rect class="box" x="620" y="120" width="92" height="56" rx="7"/>
+          <text class="stage" x="666" y="144" text-anchor="middle">persist</text>
+          <text class="sub" x="666" y="160" text-anchor="middle">memory</text>
+        </g>
+
+        <!-- flow arrows -->
+        <path class="flow-new" d="M126 148 L156 148"/>
+        <path class="flow" d="M250 148 L260 148"/>
+        <path class="flow" d="M342 148 L352 148"/>
+        <path class="flow" d="M426 148 L436 148"/>
+        <path class="flow" d="M524 148 L534 148"/>
+        <path class="flow" d="M608 148 L618 148"/>
+
+        <!-- Craft floor (new) attaches to build/implement -->
+        <rect class="newbox" x="262" y="232" width="180" height="46" rx="7"/>
+        <text class="newlabel" x="352" y="252" text-anchor="middle">Craft floor</text>
+        <text class="sub" x="352" y="268" text-anchor="middle" fill="#b5503a">NEW · build + implement</text>
+        <path class="flow-new" d="M352 232 L352 178"/>
+
+        <!-- prism-write (new) attaches to persist -->
+        <rect class="newbox" x="600" y="232" width="132" height="46" rx="7"/>
+        <text class="newlabel" x="666" y="252" text-anchor="middle">/prism-write</text>
+        <text class="sub" x="666" y="268" text-anchor="middle" fill="#b5503a">NEW · docs</text>
+        <path class="flow-new" d="M666 232 L666 178"/>
+
+        <text class="sub" x="8" y="36" fill="#2a2724" style="font-weight:600">the deliberation pipeline</text>
+        <text class="sub" x="8" y="54">read left to right · dashed rust lines are the three additions</text>
+      </svg>
+      <figcaption>The pipeline is unchanged. The additions sit at the edges: input (Repo Map), code output
+      (Craft floor), and human output (prism-write).</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Addition one</h2>
+    <h3><span class="num">01</span>The Repo Map <span class="badge">big codebases</span></h3>
+    <p>Before this, Prism scoped a codebase with one line of prose: break it into parts, send three to six
+    explorers, scale to size. On a fifty-file project that is fine. On a fifteen-hundred-file monorepo it
+    is guesswork. There was also a promised "file concern map" that routed each lens to the code it owns,
+    but nothing actually built it.</p>
+    <p>Now <code>/prism-understand</code> runs a size check first. Small repos keep the old flat sweep.
+    Medium and larger repos build a <code>.prism/repo-map.md</code>: the directory tree, the workspace and
+    manifest roots, and a cheap concern tagging, fingerprinted so a later run knows when it is stale.</p>
+
+    <p class="correction"><span class="lead">The skeptic pass cut three things.</span> The first design
+    trusted the cache, used relevance to choose which files to read, and checked staleness by file count.
+    All three were wrong. A trusted cache goes stale without warning. Relevance ranking hides the
+    cross-cutting bug. File count does not move when a function moves between two files of the same size.
+    The final design: the map is a hint, lenses still read their own slice, staleness uses git blob OIDs,
+    and ranking sets read depth, not which files get read. Audits keep a full sweep.</p>
+
+    <div class="files">
+      <span class="ln add">M  commands/prism-understand.md   step 0 SIZE &amp; MAP + the Repo Map section</span>
+      <span class="ln add">M  commands/prism.md             fan-out caches the bucketing scan as a hint</span>
+      <span class="ln add">M  commands/prism-prune.md       re-buckets on git-OID drift</span>
+    </div>
+    <p>Monorepo build orchestration (a TypeScript front end next to Rust contracts) is detected but not yet
+    fully handled. That is the next slice, deferred on purpose.</p>
+  </section>
+
+  <section>
+    <h2>Addition two</h2>
+    <h3><span class="num">02</span>The Craft floor <span class="badge">clean code</span></h3>
+    <p>Prism was good at matching a codebase that already exists. It detected the language, the framework,
+    the naming, and the linter, and it conformed. The gap showed up on greenfield work: with nothing to
+    match, there was no standard at all. Code could compile, pass its tests, conform structurally, and
+    still be painful to maintain. Cryptic names, bloated functions, no rationale, dead code left behind.</p>
+    <p>The Craft floor adds the missing standard. Names reveal intent. A function does one job. No dead code
+    or unused imports survive in the diff. Comments explain why, not what. Leave the file at least as
+    readable as you found it. It sits under the existing "conform first" rule, so it governs only the code
+    that is yours to write.</p>
+
+    <p class="correction"><span class="lead">The skeptic cut the cap and the gate checks.</span> The draft
+    had a thirty-line function cap and proposed heuristic checks in the integrity gate. Both are gone. A
+    line cap breaks long but cohesive units: a Rust match, a JSX tree, a table test. Heuristic checks in a
+    shell script are language-blind and noisy, and a gate that fires false alarms gets ignored, which would
+    erode the secrets-and-faked-tests signal that matters. The floor is qualitative, the gate is untouched,
+    and type discipline stays with the linter that already enforces it.</p>
+
+    <div class="files">
+      <span class="ln add">M  commands/prism-implement.md   craft floor, done-signal, readability review</span>
+      <span class="ln add">M  commands/prism-build.md       greenfield sets and records the standard</span>
+      <span class="ln add">M  commands/prism-ship.md        craft floor in the build loop</span>
+      <span class="ln">   hooks/prism-gate.sh          untouched, by design</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Addition three</h2>
+    <h3><span class="num">03</span>The /prism-write command <span class="badge">human docs</span></h3>
+    <p>No command wrote documents for a person to read. Prism summarized diffs into its own memory, but it
+    never produced a README, a change summary, or an article. <code>/prism-write</code> fills that gap. It
+    has four modes picked from the target: a grounded README, a change summary, a retroactive comment pass,
+    and a self-contained HTML article with an architecture diagram. The page you are reading is that last
+    mode, run on this very change set.</p>
+    <p>Two rules carry the weight. Every claim is re-derived from the real files, so a README cannot invent
+    a feature the code lacks. And the voice is human: short, active, concrete, no hype, and no em-dashes.
+    Grounding is the part that actually removes slop. The voice rules only reduce it.</p>
+
+    <p class="correction"><span class="lead">The skeptic caught a contradiction.</span> A style cannot be
+    both a silent default and a forced question. The fix: JetBrains is the default and most modes proceed
+    without asking. Only the article asks, once, and only when there is no <code>brand.md</code> and you
+    have not already chosen. You picked warm monochrome and system fonts, so this page loads with no network
+    requests.</p>
+    <p>There was also an honest miss worth recording. The command that bans em-dashes first shipped with
+    thirteen of them, inherited from shared boilerplate. A one-line grep caught it, not a careful re-read.
+    The lesson is now in project memory: when a rule is mechanically checkable, run the check on the
+    artifact instead of trusting that you followed it.</p>
+
+    <div class="files">
+      <span class="ln add">A  commands/prism-write.md       new command, 96 lines, em-dash free</span>
+      <span class="ln add">M  README.md / OVERVIEW.md       command tables now list eleven</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it was built</h2>
+    <h3>A lean panel, then three skeptics</h3>
+    <p>The plan came from <code>/prism-plan</code> run in its lean configuration: three explorers to ground
+    the work in real files, then a draft, then three skeptics on different tiers whose only instruction was
+    to refute. They changed the Repo Map and the /prism-write design, and they trimmed the Craft floor.
+    This is the fleet's one measured strength: catching a concrete flaw before it ships. The full plan and
+    every correction live in <code>docs/01-prism-three-improvements.md</code>.</p>
+  </section>
+
+  <section>
+    <h2>Honest limits</h2>
+    <h3>What is not done</h3>
+    <ul class="tight">
+      <li>Monorepo build orchestration is detected but not handled. It is the next slice.</li>
+      <li>The Repo Map saves real work only on repeated runs, and its win is modest. Building a faithful map
+      still costs about one exploration.</li>
+      <li>Anti-slop by instruction is a soft lever. Grounding is the hard one. When a sentence is in doubt,
+      the rule is to cut it.</li>
+      <li>These are playbook changes, so the real test is running them on a live large repo, not a unit
+      suite. Nothing here is committed yet.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Generated by /prism-write, article mode, on branch feat/prism-write.</p>
+    <p>Style: warm monochrome, system fonts, self-contained. Diagram: hand-authored inline SVG.</p>
+    <p>Grounded in the session diff and docs/01-prism-three-improvements.md. No em-dashes, by request.</p>
+  </footer>
+
+</div>
+</body>
+</html>

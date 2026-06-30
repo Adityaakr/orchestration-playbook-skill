@@ -33,7 +33,7 @@ Prism is architected to attack each of these directly — and to *measure* the l
 7. **Measured, not claimed** — the harness can prove (or disprove) its own value, and is willing to recommend shrinking itself.
 8. **Honest over reassuring** — flag uncertainty, label confidence, report what held up *and* what broke.
 
-## 4. The ten commands
+## 4. The eleven commands
 Prism is a lifecycle, each stage its own command — plus one that drives the whole thing:
 
 | Command | Purpose | Method |
@@ -46,6 +46,7 @@ Prism is a lifecycle, each stage its own command — plus one that drives the wh
 | `/prism-retro` | Learn from a shipped plan | Compares predicted vs actual + consumes telemetry → writes *measured* lessons back into memory |
 | `/prism-prune` | Keep memory trustworthy | Re-verifies cited invariants against live code; prunes/corrects stale entries |
 | `/prism-eval` | Prove the fleet beats one pass | Divergence threshold, grounding P/R, fleet-vs-single win-rate, injected-flaw detection, find-the-floor |
+| `/prism-write` | Write human docs for what you built | README · change summary · retroactive code comments · a clean self-contained HTML article with an architecture diagram. Grounded in real files, human voice, no slop, no em-dashes. JetBrains style by default; asks for the article only. |
 | `/prism-ship` | **Idea → working dapp, one command** | Drives the whole lifecycle autonomously: frame (asks its own gating Qs) → architect → decompose → build each milestone in self-correcting loops → attack with the full feedback fleet → retro/converge. Generates its own follow-up work; loops until done. Pauses only at scope, the approved architecture, and irreversible one-way doors. Cost-tuned: lean fleet to design, full fleet to attack. |
 | `/prism` | Router | Auto-classifies the task and runs the right stage |
 
@@ -80,6 +81,14 @@ The heavy commands (plan/build/implement/feedback) are assembled from the same p
 The stated philosophy is "diversity over cloning," but same-context-different-prompt is one model in
 costumes. W1 routes each domain lens to concern-owned code (cached as a "file concern map" in memory),
 so the divergence metric has something real to measure.
+
+**Scale handling (the Repo Map).** On a medium-or-larger repo, `/prism-understand` builds
+`.prism/repo-map.md`: the directory tree, the workspace/manifest roots, and a low-confidence concern
+tagging, fingerprinted by git blob OIDs (`git ls-files -s`), not a file count. A size gate picks the
+strategy (small repo: flat explorers; large/monorepo: map the structure first, then rank areas to
+allocate explorer *depth*, never to exclude code from an audit). The map is a navigation hint and never
+an authority: lenses still open their own slice, no claim is grounded on the map alone, and `/prism-prune`
+re-buckets on OID drift so the routing does not silently run on a stale map.
 
 ### 5c. Divergence metric (W2) — the falsifier
 The cheapest, most diagnostic signal: if the lenses cite the *same* files and reach the *same*

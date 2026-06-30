@@ -67,6 +67,8 @@ For each milestone in order, run the implement loop:
      run/observe check if not unit-testable. Confirm it fails for the right reason.
   d. **Implement** the smallest change. VERIFY-DON'T-GUESS: confirm every API/import against real
      installed types/source/docs before writing — fabricated APIs are the #1 coding hallucination.
+     Hold the **Craft floor** on new code: intent-revealing names, one job per function (no line-count
+     rule), no dead code, comments explain why. Conform to neighbors first; never refactor them inline.
   e. **Run → diagnose → fix loop (hard cap 5):** each iteration run the done-signal AND the full
      existing suite (regression guard). Green + acceptance → exit. Red → fix the ROOT CAUSE; same
      error twice → fan out 2–3 diagnostic hypotheses and pick the best-supported. FORBIDDEN: making

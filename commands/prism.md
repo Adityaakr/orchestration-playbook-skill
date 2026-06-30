@@ -61,10 +61,14 @@ the codebase its concern OWNS, so lenses see different code, not just read diffe
 - UX → user-facing flows + error/edge surfaces
 - scale · supply-chain · testability → the analogous concern-owned slice
 CORE lenses (first-principles / adversary / practitioner) stay on the BROAD picture — they
-are holistic; do NOT narrow them. Use the project-model's `file:line` map + danger zones to
-route. If the project-model isn't categorized by concern, run a one-pass bucketing scan that
-tags files by concern and CACHE it in `.prism/project-model.md` under a "File concern map"
-section so later runs skip it. Log which file set each lens received.
+are holistic; do NOT narrow them. Use the Repo Map / project-model `file:line` map + danger zones
+to route. If no concern tagging exists yet, run a one-pass bucketing scan that tags files by concern
+and CACHE it in `.prism/repo-map.md` (structure + low-confidence concern tags + a git-OID staleness
+fingerprint from `git ls-files -s`), so later runs reuse it. The map is a navigation HINT, never an
+authority: each lens still opens and greps its own slice, and no claim is grounded on the map alone.
+On a LARGE or monorepo target, map the STRUCTURE first (directories + manifest roots) and rank areas
+by relevance to allocate explorer DEPTH — never to exclude code from an audit/understand sweep. Log
+which file set each lens received.
 
 LENS ROSTER (pick the relevant ones):
 - core (always): first-principles · adversary · practitioner

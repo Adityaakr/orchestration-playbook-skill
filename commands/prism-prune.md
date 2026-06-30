@@ -28,6 +28,11 @@ separate from the per-repo `.prism/project-model.md` CODE layer this command mai
    move to a "## Archived" section at the bottom).
 5. **Flag drift.** If many invariants went FALSE, say so plainly — it means the code moved a
    lot since memory was last built; recommend a fresh `/prism-understand` pass.
+6. **Refresh the Repo Map (if present).** If `.prism/repo-map.md` exists, re-check its git-OID
+   fingerprint against `git ls-files -s`. Re-bucket the files whose OID changed and update the
+   structure. If the drift is large, flag that differential routing (W1) has been running on a stale
+   map and recommend a fresh `/prism-understand` map pass. The concern tags stay low-confidence: this
+   keeps the navigation hint usable, it never makes the map a source of truth.
 
 ## Output
 - A short report: N entries → kept / updated / removed / needs-reconfirm.

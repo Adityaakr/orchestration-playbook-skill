@@ -33,12 +33,29 @@ capture durable prefs. Global USER layer — separate from the per-repo `.prism/
   stack or stop. If the project has NO existing convention for something genuinely new, fan out a
   quick lens discussion (2–3 agents) to pick the best-practice approach FOR THIS STACK, apply it
   consistently, and record the choice in `.prism` memory so future slices follow it.
+- **CRAFT FLOOR (write code a human can maintain).** Conforming to the existing style comes FIRST
+  (above). This is the quality floor on the code that is YOURS to write, and it applies in full when a
+  file is genuinely new and has no local exemplar to copy:
+  - **Names reveal intent.** No `tmp`, `data2`, `handleClick2`, no single letters outside a tight loop.
+    A reader should know what a symbol is without chasing its definition.
+  - **One job per function.** If you cannot name what it does in one phrase, split it. There is NO
+    line-count rule: a long but cohesive unit (a Rust `match`, a JSX tree, a table-driven test) is fine;
+    a function doing three unrelated things is not.
+  - **No dead code, no unused imports, no commented-out blocks** left in the diff.
+  - **Comments explain WHY** (the decision, the constraint, the non-obvious), never restate the WHAT the
+    code already says.
+  - **Leave the file at least as readable as you found it.**
+  Type discipline (no gratuitous `any`) and required doc comments are enforced objectively by the
+  project's strict/lint config and the done-signal below, so they are not restated here. NEVER refactor
+  the surrounding code to hit this floor: that is the drive-by refactor §2 forbids. If neighbors are
+  messy, log it as a follow-up recommendation; do not fix it in this slice.
 - **Detect the checks.** Find how this project verifies itself: test / typecheck / lint / build /
   run commands (package.json scripts, Makefile, etc.). If you cannot determine it, ASK — do not guess.
 - **Isolate.** If on the default branch (main/master), create a feature branch FIRST. Never
   build directly on main.
 - **State the DONE definition** up front: acceptance criteria met + the new check green + full
-  existing suite green + no new type/lint errors + matches conventions.
+  existing suite green + no new type/lint errors + matches conventions + new code meets the Craft floor
+  (intent-revealing names, cohesive functions, no dead code, WHY-comments on non-obvious logic).
 
 ## 1. Define the done-signal FIRST (objective, TDD where possible)
 - Translate the slice's acceptance criteria into an OBJECTIVE check:
@@ -84,7 +101,8 @@ Each iteration:
 - **Adversarial check (W5 — decorrelated skeptics):** for each load-bearing claim about the
   change, spawn 3 skeptics in a fixed **2× Opus + 1× Sonnet** split (pin via the Task `model`
   param) — "does this ACTUALLY satisfy the acceptance criteria, or did the test pass trivially /
-  for the wrong reason?" They re-open the diff + criteria. ≥2 of 3 refute → fix the gap. The
+  for the wrong reason?" plus "could a new maintainer change this code safely, or is it cryptic?" They
+  re-open the diff + criteria. ≥2 of 3 refute → fix the gap. The
   Sonnet (different TIER → fewer shared blind spots) can be the deciding vote on something both
   Opus slots missed. This is cross-TIER, not cross-version; grounding (an actual passing run)
   still OUTRANKS skeptic survival.
@@ -93,6 +111,9 @@ Each iteration:
   finding; NEVER suppress it.
 - **Self-review the diff:** leftover debug/console logs, hardcoded secrets, unhandled errors,
   obvious bugs. For money/auth/data code, apply the security lens.
+- **Readability pass:** would a new maintainer understand this diff without you explaining it? Check
+  naming, function cohesion, dead code, and WHY-comments on non-obvious logic. Fix what fails INSIDE the
+  diff; do not expand scope to refactor neighbors.
 - **Confirm clean:** full suite still green, no new type/lint errors.
 
 ## 5. Land & remember
@@ -110,3 +131,6 @@ Each iteration:
 - One slice per run. Grounded: every "it works" claim is backed by a run you executed.
 - Match the codebase; don't impose new conventions. Respect every recorded invariant.
 - The done-signal is sacred — improve the code to meet it, never lower it to pass.
+- **Craft floor:** new code is readable and self-explanatory (intent-revealing names, one job per
+  function, no dead code, comments explain why). Conform to neighbors first; never refactor them inline
+  to hit the floor. Messy surroundings are a logged follow-up, not this slice's job.
