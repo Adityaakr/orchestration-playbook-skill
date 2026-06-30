@@ -19,7 +19,8 @@ claims, and only what survives makes it into the final output.
 
 ## Architecture at a glance
 
-<img width="784" height="580" alt="Screenshot 2026-06-30 at 5 34 20 PM" src="https://github.com/user-attachments/assets/772b247b-336b-4b02-b8ef-4e8f81c357c7" />
+<img width="788" height="694" alt="Screenshot 2026-06-30 at 10 33 25 PM" src="https://github.com/user-attachments/assets/e5ecc04b-0f1f-466a-a90a-bd3c396eb56d" />
+
 
 
 > ✏️ **Editable hand-drawn version:** [`architecture.excalidraw`](architecture.excalidraw) —
