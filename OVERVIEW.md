@@ -143,6 +143,18 @@ Prism can test its own core bet. Fixtures with ground truth feed four measuremen
   still beats single-pass. The harness is explicitly allowed to recommend **"shrink the default."**
 Numbers exist only when `/prism-eval` is actually run; unrun sections report `NOT RUN` — never fabricated.
 
+### 5g-bis. Clean-code floor (the Craft floor)
+Conforming to an existing codebase was already covered (detect the stack, match its naming and lint).
+The gap was greenfield: with nothing to match, there was no quality standard, so code could compile,
+pass tests, conform structurally, and still be unmaintainable. The Craft floor fills that gap in
+`/prism-build`, `/prism-implement`, and `/prism-ship`: intent-revealing names, one job per function,
+no dead code, comments that explain why, and "leave the file at least as readable as you found it." It
+sits under the "conform first" rule and governs only the code that is yours to write. Deliberately
+small after a skeptic pass: no numeric line cap (it breaks long cohesive units), no heuristic checks
+bolted onto `prism-gate.sh` (a gate that cries wolf gets ignored), and type and doc discipline are left
+to the project's strict and lint config, which the done-signal already enforces. New code is never an
+excuse to refactor messy neighbors inline; that is logged as a follow-up.
+
 ### 5h. The lifecycle & engine (architecture diagram)
 ```
    USER ──► /prism (router) ──► understand ─► plan/build ─► implement ─► feedback ─► retro
@@ -154,7 +166,7 @@ Numbers exist only when `/prism-eval` is actually run; unrun sections report `NO
    └─────────────────────────────────────────────────────────────────────────────────────┘
                           ▲ read                                    write ▼ (+ telemetry)
    ╔══════════════ PROJECT MEMORY (.prism/project-model.md) ═══════════════════════════════╗
-   ║ invariants · conventions · danger zones · decisions · lessons · file-concern map      ║
+   ║ invariants · conventions · danger zones · decisions · lessons · repo map (sizing+OID)  ║
    ╚═══════════════════════════════════════════════════════════════════════════════════════╝
    ENFORCEMENT (hooks):  prism-guard → blocks one-way doors   ·   prism-gate → blocks faked-green
    PROOF (/prism-eval):  divergence threshold · grounding P/R · fleet-vs-single · find-the-floor
@@ -224,7 +236,28 @@ spending agents.
 **Evidence-tuned defaults:** use the LEAN/`quick` config for design decisions (the eval showed the
 full fleet doesn't beat a careful pass there at ~5× cost) and the FULL fleet for `/prism-feedback`
 and code review (where it measurably earns its cost). The hooks and project memory are the
-proven-strong parts — keep them on, and commit `.prism/project-model.md` so it compounds.
+proven-strong parts; keep them on.
+
+**Memory sharing, stated honestly:** `.prism/` is gitignored by default (`.gitignore`), so project
+memory is machine-local and does NOT compound across a team as shipped. To share it, un-ignore
+`.prism/project-model.md` specifically and commit it, while keeping `user.md` and `.prism/runs/`
+private. Whether memory should be team-shared or private is a real decision, not a default; it is the
+first open question in the production-readiness plan below.
+
+## 10. Production-readiness roadmap
+Prism today is promising and grounded. Making it dependable in real engineering use is planned in
+[`docs/03-prism-production-readiness.md`](docs/03-prism-production-readiness.md). The honest framing:
+Prism is markdown playbooks plus hooks plus memory, not a runtime, so production-grade means dependable
+artifacts and disciplined process, not uptime. The lean MVP (after a cross-tier critic pass cut an
+over-built first draft) is:
+- Resolve three foundational gaps: the memory sharing decision above, a version/drift check for the
+  copied playbooks, and a write protocol so two runs do not clobber `project-model.md`.
+- A four-tier evidence ladder (verified / supported / unverified / contradicted) with citation enforcement.
+- A tiered safety guard (rewrite `prism-guard.sh` by reversibility; today it over-blocks `rm -rf
+  node_modules` and under-blocks a local `git commit` on main).
+- One `checkpoint.json` per run for resume.
+- Retrieval discipline (ripgrep + the Repo Map + on-demand ctags, never a committed index that goes stale).
+Everything heavier waits until an eval fixture proves it earns its cost.
 
 ---
 
